@@ -9,27 +9,16 @@ each box may contain keys to the other boxes.
 def canUnlockAll(boxes):
     """Method that determines if all the boxes can be opened"""
 
-    total_boxes = len(boxes)
-    lista_boxes = list(range(1, total_boxes))
-
-    if not boxes or total_boxes == 0:
+    if type(boxes) is not list:
         return False
-
-    if total_boxes <= 1:
-        return True
-
-    keys_list = boxes[0]
-    if 0 in keys_list:
-        del keys_list[0]
-    for key in keys_list:
-        if key in lista_boxes:
-            for key_box in boxes[key]:
-                if key_box not in keys_list and key_box != 0:
-                    keys_list.append(key_box)
-
-    keys_list.sort()
-    if keys_list == lista_boxes:
-        return True
-    else:
+    elif (len(boxes)) == 0:
         return False
-		
+    for k in range(1, len(boxes) - 1):
+        boxes_checked = False
+        for idx in range(len(boxes)):
+            boxes_checked = k in boxes[idx] and k != idx
+            if boxes_checked:
+                break
+        if boxes_checked is False:
+            return boxes_checked
+    return True
