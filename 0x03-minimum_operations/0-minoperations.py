@@ -1,22 +1,31 @@
 #!/usr/bin/python3
-import math
+"""
+Module used to min ops
+"""
 
 
 def minOperations(n):
-    """ Calculates the fewest number of operations needed to result in
-        exactly n H characters.
-        Args:
-            @n: integer
-        Return:
-            the fewest number of operations needed to result in n H characters
     """
-    suma = 0
-    if n <= 1:
-        return suma
-    for i in range(2, int(math.sqrt(n) + 1)):
-        while n % i == 0:
-            suma += i
-            n = n // i
-    if n > 1:
-        suma += n
-    return suma
+    Method that determines if all the boxes can be opened.
+    Args:
+        n (int): Number.
+    Returns:
+        x (int): for success,
+        0 if it is impossible to achieve
+    """
+
+    if (not isinstance(n, int)):
+        return 0
+
+    if (n < 2):
+        return 0
+
+    res = 0
+    i = 2
+    while i <= n:
+        if n % i == 0:
+            res += i
+            n = n / i
+            i = i - 1
+        i = i + 1
+    return int(res)
