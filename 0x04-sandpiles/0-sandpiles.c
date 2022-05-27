@@ -1,116 +1,74 @@
 #include "sandpiles.h"
 
 /**
- * print_grid - prints "=" + a newline + a grid
- * @grid: the grid the print
- * Return: void
- */
-void print_grid(int grid[3][3])
-{
-	int i, j;
-
-	printf("=\n");
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (j)
-				printf(" ");
-			printf("%d", grid[i][j]);
-		}
-		printf("\n");
-	}
-}
-
-/**
- * copy_grid - copied a grid into another
- * @grid1: the grid to copy
- * @gridc: the copy of the first grid
- * Return: void
- */
-void copy_grid(int grid1[3][3], int gridc[3][3])
-{
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			gridc[i][j] = grid1[i][j];
-		}
-	}
-}
-
-/**
- * topple_and_check - topples a grid only once and check if it's stable
- * @grid1 : the grid
- * Return: 1 if stable, 0 if not yet
- */
-int topple_and_check(int grid1[3][3])
-{
-	int i, j;
-	int gridc[3][3] = {
-		{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0}};
-
-	copy_grid(grid1, gridc);
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (gridc[i][j] > 3)
-			{
-				grid1[i][j] -= 4;
-				if (i - 1 >= 0)
-					grid1[i - 1][j] += 1;
-				if (j - 1 >= 0)
-					grid1[i][j - 1] += 1;
-				if (i + 1 < 3)
-					grid1[i + 1][j] += 1;
-				if (j + 1 < 3)
-					grid1[i][j + 1] += 1;
-			}
-		}
-	}
-	for (i = 0; i < 3; i++)
-	{
-		for (j = 0; j < 3; j++)
-		{
-			if (grid1[i][j] > 3)
-			{
-				print_grid(grid1);
-				return (0);
-			}
-		}
-	}
-	return (1);
-}
-
-/**
- * sandpiles_sum - a function that computes the sum of two sandpiles
- * @grid1: first grid
- * @grid2: second grid
- * Return: none
+ * sandpiles_sum - stabilize 2 sand piles trhough addition
+ * @grid1: pile 1
+ * @grid2: pile 2
  */
 void sandpiles_sum(int grid1[3][3], int grid2[3][3])
 {
-	int i, j, stable = 1;
+	int i;
+	int j;
 
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < len; i++)
 	{
-		for (j = 0; j < 3; j++)
-		{
+		for (j = 0; j < len; j++)
 			grid1[i][j] += grid2[i][j];
-			if (grid1[i][j] > 3)
-				stable = 0;
+	}
+
+	while (ifunstable(grid1, grid2))
+	{
+		printf("=\n");
+		i = 0;
+		while (i < len)
+		{
+			for (j = 0; j < len; j++)
+				printf((j == len - 1) ? "%d\n" : "%d ", grid1[i][j]);
+			i++;
+		}
+		for (i = 0; i < len; i++)
+		{
+			for (j = 0; j < len; j++)
+			{
+				if (grid2[i][j] > 3)
+				{
+					grid1[i][j] -= 4;
+					if (i > 0)
+						++grid1[i - 1][j];
+					if (i < len - 1)
+						++grid1[i + 1][j];
+					if (j > 0)
+						++grid1[i][j - 1];
+					if (j < len - 1)
+						++grid1[i][j + 1];
+				}
+			}
 		}
 	}
-	if (stable == 1)
-		return;
-	print_grid(grid1);
-	while (stable == 0)
+}
+
+/**
+ * ifunstable - Checks if a sandpile is unstable
+ * @grid: sandpile
+ * @backup: copy of sandpile to check
+ * Return: 1 if unstable 0 if stable
+ */
+int ifunstable(int grid[3][3], int backup[3][3])
+{
+	int i = 0;
+	int j;
+	int unstable = 0;
+
+	while (i < len)
 	{
-		stable = topple_and_check(grid1);
+		for (j = 0; j < len; j++)
+		{
+			backup[i][j] = grid[i][j];
+			if (backup[i][j] > 3)
+				unstable = 1;
+		}
+		i++;
 	}
+
+	return (unstable);
 }
