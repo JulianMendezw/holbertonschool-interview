@@ -1,79 +1,66 @@
 #!/usr/bin/python3
 """
-The N queens puzzle is the challenge of placing N
-non-attacking queens on an NxN chessboard. Write a
-program that solves the N queens problem.
+    N-queen problem
+    The next algo solve any N queen in any NxN
+    Being N > 3
 """
 import sys
 
 
-class NQueensN:
-    """ Class for solving N Queen Problem """
+def n_q(t_arr, arr, col, i, n):
+    """
+       n_q - Find all posibles solution for N-queen problem and return it
+             in a list
+       @t_arr: temporaly list to store the all points of a posible solution
+       @arr: store all the solution
+       @col: save a colum use for a queen
+       @i: the row of the chess table
+       @n: Number of queens
+    """
+    if (i > n):
+        arr.append(t_arr[:])
+        return arr
 
-    def __init__(self, n):
-        """
-        Constructor
-        """
-        self.n = n
-        self.x = [0 for i in range(n + 1)]
-        self.res = []
+    for j in range(n + 1):
+        if i == 0 or ([i - 1, j - 1] not in t_arr and
+                      [i - 1, j + 1] not in t_arr and
+                      j not in col):
+            if i > 1:
+                dia = 0
+                for k in range(2, i + 1):
+                    if ([i - k, j - k] in t_arr) or ([i - k, j + k] in t_arr):
+                        dia = 1
+                        break
+                if dia:
+                    continue
+            t_arr.append([i, j])
+            col.append(j)
+            n_q(t_arr, arr, col, i + 1, n)
+            col.pop()
+            t_arr.pop()
 
-    def place(self, k, i):
-        """
-        Checks if k Queen can be placed in i column (True)
-        or if the are attacking queens in row or diagonal (False)
-        """
-
-        for j in range(1, k):
-            # There is already a queen in column
-            # or a queen in same diagonal
-            if self.x[j] == i or \
-               abs(self.x[j] - i) == abs(j - k):
-                return 0
-        return 1
-
-    def nQueen(self, k):
-        """
-        Tries to place every queen in the board
-        Args:
-        k: starting queen from which to evaluate (should be 1)
-        """
-        # i goes from column 1 to column n (1st column is 1st index)
-        for i in range(1, self.n + 1):
-            if self.place(k, i):
-                # Queen can be placed in i column
-                self.x[k] = i
-                if k == self.n:
-                    # Placed all 4 Queens (A solution was found)
-                    solution = []
-                    for i in range(1, self.n + 1):
-                        solution.append([i - 1, self.x[i] - 1])
-                    self.res.append(solution)
-                else:
-                    # Need to place more Queens
-                    self.nQueen(k + 1)
-        return self.res
+    return arr
 
 
-# Main
-if len(sys.argv) != 2:
-    print("Usage: nqueens N")
-    sys.exit(1)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: nqueens N")
+        exit(1)
 
-N = sys.argv[1]
+    try:
+        n = int(sys.argv[1])
+    except:
+        print("N must be a number")
+        exit(1)
 
-try:
-    N = int(N)
-except ValueError:
-    print("N must be a number")
-    sys.exit(1)
+    if not isinstance(n, int):
+        print("N must be a number")
+        exit(1)
 
-if N < 4:
-    print("N must be at least 4")
-    sys.exit(1)
+    elif n < 4:
+        print("N must be at least 4")
+        exit(1)
 
-queen = NQueensN(N)
-res = queen.nQueen(1)
-
-for i in res:
-    print(i)
+    n_q_arr = n_q([], [], [], 0, n - 1)
+    for i in n_q_arr:
+        print(i)
