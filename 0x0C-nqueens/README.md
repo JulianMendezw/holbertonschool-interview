@@ -1,5 +1,23 @@
-# 0x0C. N Queens
+0x0C. N Queens
 
+    By Alexa Orrico, Software Engineer at Holberton School
+
+    Weight: 1
+
+    Ongoing project - started
+
+    Jul 18, 2022
+
+    , must end by
+
+    Jul 22, 2022
+        you're done with 0% of tasks.
+
+    Checker was released at
+
+    Jul 20, 2022 12:00 AM
+
+    An auto review will be launched at the deadline
 
 Requirements
 General
@@ -11,4 +29,3 @@ General
     A README.md file, at the root of the folder of the project, is mandatory
     Your code should use the PEP 8 style (version 1.7.*)
     All your files must be executable
-
