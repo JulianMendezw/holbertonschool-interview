@@ -1,51 +1,78 @@
 #include "binary_trees.h"
 
 /**
- * sorted_array_to_avl - Builds an AVL tree from an array
+ * binary_tree_node - creates a no in binary tree
+ * @parent: pointer to the parent node
+ * @value: value to set in the new node
  *
- * @array: The array to be converted
- * @size: Size of the array
- * Return: a pointer to root node of the created AVL tree
+ * Return: New Node or NULL on failure
  */
-avl_t *sorted_array_to_avl(int *array, size_t size)
+binary_tree_t *binary_tree_node(binary_tree_t *parent, int value)
 {
-	int i;
+	binary_tree_t *new_node = NULL;
 
-	if (!array || size < 1)
+	new_node = malloc(sizeof(binary_tree_t));
+
+	if (!new_node)
 		return (NULL);
-	for (i = 1; i < (int)size; i++)
-	{
-		if (array[i] < array[i - 1])
-			return (NULL);
-	}
-	return (createAVL(array, 0, (int)size - 1, NULL));
+
+	new_node->parent = parent;
+	new_node->left = NULL;
+	new_node->right = NULL;
+	new_node->n = value;
+
+	return (new_node);
+}
+/**
+ * sort_insert - Function for sort insertion
+ * @array: pointer to the first element
+ * @min: lower limit
+ * @max: upper limit
+ *
+ * Return: pointer to the root node or NULL on failure
+ */
+avl_t *sort_insert(int *array, int min, int max)
+{
+	int half;
+	avl_t *tree;
+
+	if (min > max)
+		return (NULL);
+
+	half = (max + min) / 2;
+
+	tree = binary_tree_node(NULL, array[half]);
+	if (!tree)
+		return (NULL);
+
+	tree->left = sort_insert(array, min, half - 1);
+
+	tree->right = sort_insert(array, half + 1, max);
+
+	if (tree->left)
+		tree->left->parent = tree;
+
+	if (tree->right)
+		tree->right->parent = tree;
+
+	return (tree);
 }
 
 /**
- * createAVL - Builds an AVL tree from an array
+ * sorted_array_to_avl - builds an AVL tree
+ * @array: pointer to the first element
+ * @size: number of element in the array
  *
- * @array: The array to be converted
- * @start: start index of the subarray
- * @end: last index of the subarray
- * @parent: parent of the currently created node
- * Return: a pointer to root node of the created AVL tree
+ * Return: pointer to the root node or NULL on failure
  */
-avl_t *createAVL(int *array, int start, int end, avl_t *parent)
+avl_t *sorted_array_to_avl(int *array, size_t size)
 {
-	avl_t *root;
-	int mid;
+	avl_t *root = NULL;
 
-	if (start > end)
+	if (!array || size < 1)
 		return (NULL);
 
-	mid = (start + end) / 2;
+	root = sort_insert(array, 0, size - 1);
 
-	root = malloc(sizeof(avl_t));
-	if (!root)
-		return (NULL);
-	root->n = array[mid];
-	root->parent = parent;
-	root->left = createAVL(array, start, mid - 1, root);
-	root->right = createAVL(array, mid + 1, end, root);
 	return (root);
 }
