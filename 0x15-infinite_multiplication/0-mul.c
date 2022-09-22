@@ -1,116 +1,105 @@
 #include "holberton.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /**
- * main - Entry point
- * @argc : number of arguments
- * @argv: array of pointers to arguments
- * Return: 0 on success
+ * _puts - prints a string.
+ * @s: a string.
+ * Return: Nothing.
  */
-int main(int argc, char *argv[])
+void _puts(char *s)
 {
-	int i, l1, l2;
-	char *result;
+	if (*s != '\0')
+	{
+		_putchar(*s);
+		puts(s + 1);
+	}
+}
+/**
+ * err_message - print s and exit 98 status
+ * @s: error message to print
+ * Return: Nothing
+ */
+void err_message(char *s)
+{
+	_puts(s);
+	exit(98);
+}
+/**
+ * _isdigit - check if s is a number or not.
+ * @s: string to check.
+ * Return: 0 if s is a number otherwise 1.
+ */
+int _isdigit(char *s)
+{
+	int i, digit = 0;
 
-	if (argc != 3)
+	for (i = 0; s[i] && !digit; i++)
 	{
-		printf("Error\n");
-		exit(98);
+		if (s[i] < '0' || s[i] > '9')
+			digit++;
 	}
-	l1 = check_argument(argv[1]);
-	l2 = check_argument(argv[2]);
-	result = prepare_result(l1 + l2);
-	multiplication(argv[1], argv[2], l1, l2, result);
-	for (i = 0; result[i] == '0' && result[i + 1]; i++)
+	return (digit);
+}
+/**
+ * operations - multiplies, adds and stores the result in a string.
+ * @num1: first number.
+ * @num2: second number.
+ * @len1: length of num1.
+ * @len2: length of num2.
+ * Return: result of multiplies.
+ */
+char *operations(char *num1, char *num2, int len1, int len2)
+{
+	char *result = NULL;
+	int i, j, carry, len_total = (len1 + len2);
+
+	result = malloc(sizeof(char) * len_total);
+	if (!result)
+		err_message("Error");
+	for (i = 0; i < len_total; i++)
+		result[i] = '0';
+	for (i = len1 - 1; i >= 0; i--)
 	{
-		;
+		carry = 0;
+		for (j = len2 - 1; j >= 0; j--)
+		{
+			carry += (num1[i] - '0') * (num2[j] - '0');
+			carry += result[i + j + 1] - '0';
+			result[i + j + 1] = (carry % 10) + '0';
+			carry /= 10;
+		}
+		if (carry)
+			result[i + j + 1] = (carry % 10) + '0';
 	}
-	printf("%s\n", &result[i]);
+	return (result);
+}
+/**
+ * main - multiplies two positive numbers.
+ * description: Usage: mul num1 num2
+ * Print the result, followed by a new line.
+ * @av: arguments value (num1, num2)
+ * @ac: arguments count
+ * Return: 0 if success otherwise 98 and print Error.
+ */
+int main(int ac, char **av)
+{
+	int len1 = 0, len2 = 0;
+	char *num1 = av[1], *num2 = av[2], *result = NULL;
+
+	if (ac != 3 || _isdigit(num1) || _isdigit(num2))
+		err_message("Error");
+	if (av[1][0] == 48 || av[2][0] == 48)
+		_puts("0"), exit(0);
+
+	while (num1[len1])
+		len1++;
+	while (num2[len2])
+		len2++;
+
+	result = operations(num1, num2, len1, len2);
+	if (result[0] == '0')
+		_puts(result + 1);
+	else
+		_puts(result);
 	free(result);
 	return (0);
-}
-
-/**
- * check_argument - checks if argument is a valid integer
- * @argv: the argument
- * Return: returns the length of argument
- */
-int check_argument(char *argv)
-{
-	int i;
-
-	for (i = 0; argv[i]; i++)
-	{
-		if (argv[i] < '0' || argv[i] > '9')
-		{
-			printf("Error\n");
-			exit(98);
-		}
-	}
-	return (i);
-}
-
-/**
- * prepare_result - allocates a memory for the result
- * @length: length of the result
- * Return: A pointer to the empty allocated memory
- */
-char *prepare_result(int length)
-{
-	char *p;
-	int i;
-
-	p = malloc(sizeof(char) * (length + 1));
-	if (!p)
-	{
-		printf("Error\n");
-		exit(98);
-	}
-	for (i = 0; i < length; i++)
-	{
-		p[i] = '0';
-	}
-	p[i] = '\0';
-	return (p);
-}
-
-/**
- * multiplication - multiplies 2 arrays of characters as if they were 2 numbers
- * @argv1: array of first number
- * @argv2: array of second number
- * @l1: length of first array
- * @l2: length of second array
- * @result: array of the result of multiplication
- */
-void multiplication(char *argv1, char *argv2, int l1, int l2, char *result)
-{
-	int i, j;
-
-	for (i = l2 - 1; i >= 0; i--)
-	{
-		for (j = l1 - 1; j >= 0; j--)
-		{
-			insert(result, (argv2[i] - '0') * (argv1[j] - '0'), i + j + 1);
-		}
-	}
-}
-/**
- * insert - inserts the product of 2 numbers in an array of characters
- * @result: the array of result
- * @x: the product of 2 numbers
- * @position: position of insertion in the array
- */
-void insert(char *result, int x, int position)
-{
-	x = x + (result[position] - '0');
-	while (x > 0)
-	{
-		result[position] = (x % 10) + '0';
-		x /= 10;
-		if (x == 0)
-			break;
-		position--;
-		x += (result[position] - '0');
-	}
 }
